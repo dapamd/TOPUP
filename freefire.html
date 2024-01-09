@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCRIPT GAME GRATIS</title>
+    <style>
+:root {
+    --color-main: #20315F;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    padding: 10px;
+}
+
+header .bg-header {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    position: absolute;
+    background: var(--color-main);
+}
+
+header .main-input {
+    z-index: 1;
+    width: 100%;
+    padding: 15px;    
+    background: white;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 2px 7px rgba(4,4,4,0.1);
+}
+
+header .main-input div {
+    display: flex;
+    column-gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+header .main-input div img {
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+}
+
+header .main-input div h5 {
+    font-size: 16px;
+}
+
+header .main-input input {
+    width: 100%;
+    outline: none;
+    padding: 10px;
+    border-radius: 9px;
+    border: 2px solid #EEE;
+    transition: 0.3s ease-in-out;
+}
+
+header .main-input input:hover {
+    transition: 0.3s ease-in-out;
+    border: 2px solid var(--color-main);
+}
+
+header .select-wrapper {
+    margin-top: 15px;
+    padding-right: 10px;
+    background: #eee;
+    border-radius: 10px;
+}
+
+header select {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 12px 10px;
+    background: transparent;
+}
+
+.list-produk {
+    display: flex;
+    padding: 10px;
+    grid-row-gap: 10px;
+    flex-direction: column;
+}
+
+.list-produk div {
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 7px rgba(4,4,4,0.1);
+}
+
+.list-produk div h4 {
+    color: #161616;
+    font-size: 13px;
+}
+
+.list-produk div span {
+    color: #696969;
+    font-size: 10px;
+    line-height: 2.5;
+}
+
+.list-produk div p {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-main);
+}
+
+.loading {
+    width: 100%;
+    margin-top: 150px;
+    text-align: center;
+    box-shadow: none !important;
+}
+    </style>
+</head>
+<body>
+    
+    <header>
+        <div class="bg-header"></div>
+        <div class="main-input">
+            <div>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_xbX2lsMmU_cFyEIImmLQlnPrnp6kRx4F1w&usqp=CAU" alt="">
+                <h5>Free Fire</h5>
+            </div>
+            <input type="number" id="id-user" placeholder="masukkan id user">
+        </div>
+        <div class="select-wrapper">  
+            <!-- atur id kategorinya di sini -->   
+            <select id="category">
+                <option value="free-fire-528736">Diamond</option>
+                <option value="free-fire-528736">Membership</option>
+            </select>
+        </div>            
+    </header>
+    
+    <div class="list-produk"></div>
+    <div class="loading">Memuat Produk...</div>
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+//masukkan domain web olshop kamu di sini
+const olshop = "anpedia.bukaolshop.site"
+
+$("#category").change(function() {
+    var category = $(this).val()
+    getApi(category)
+})
+
+const looping = (loop) => {
+    $.each(loop, (i, data) => {
+        $(".list-produk").append(`<div onclick="redirect('${data.data_product.full_url}')">
+            <h4>${data.title}</h4>
+            <span>#Top-Up Game di QiosVoucher Aja</span>
+            <p>${data.data_price.price}</p>
+        </div>`)
+    })
+    $(".loading").hide()
+}
+
+const getApi = (id_category) => {
+    $(".loading").show()
+    $(".list-produk").empty()
+    let param = {
+        olshop: olshop,
+        id_category: id_category,
+    }
+    
+    $.ajax({
+      url: "https://openapi.zevaro.my.id",
+      data: param,
+      success: (response) => {
+        let data = response.data;
+        looping(data)
+      }
+   });
+}
+
+const cekid = (id, link) => {
+    $.ajax({
+      url: `https://api.icodec.xyz/cekid/api/games/freefire?user_id=${id}&api_key=icodec586d792006`,
+      success: (response) => {
+        if (!response.nickname) {
+            Swal.fire({ 
+              title: "Whoops !!", 
+              text: "nickname anda tidak terdaftar", 
+              icon: "error" 
+            });
+        }else {
+            Swal.fire({ 
+              title: "CEKID BERHASIL", 
+              text: "nickname kamu yaitu "+response.nickname,
+              icon: "success",
+              showDenyButton: true,  
+              denyButtonColor: "#EEE",
+              confirmButtonColor: "#20315F",          
+              confirmButtonText: "lanjut",
+              denyButtonText: "kembali"
+            }).then((result) => {
+              if (result.isConfirmed) {
+               window.location.href = link + "?catatan=" + id
+              }
+           })
+         }
+       }           
+   });
+}
+
+const redirect = (link) => {
+    var userID = $("#id-user").val()
+    if (!userID) {
+        Swal.fire({
+            text: "ID USER WAJIB DI ISI", 
+            icon: "warning" 
+        });
+    }else if (userID.length < 5) {
+        Swal.fire({
+            text: "ID USER HARUS DI ISI MINIMAL 5 DIGIT", 
+            icon: "warning" 
+        });
+    }else {
+        Swal.fire({
+            icon: "info",
+            title: "sedang mengecek",
+            text: "mohon tunggu beberapa saat...",
+            showConfirmButton: false,    
+        })
+        setTimeout(() => {
+            cekid(userID, link)
+        }, 1000)
+    }
+}
+
+getApi($("#category").val())
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v84a3a4012de94ce1a686ba8c167c359c1696973893317" integrity="sha512-euoFGowhlaLqXsPWQ48qSkBSCFs3DPRyiwVu3FjR96cMPx+Fr+gpWRhIafcHwqwCqWS42RZhIudOvEI+Ckf6MA==" data-cf-beacon='{"rayId":"840c4ed5ac515f59","version":"2023.10.0","token":"7f68228aadce4d1381c43cb4d6ea2712"}' crossorigin="anonymous"></script>
+</body>
+</html>
